@@ -23,7 +23,7 @@ def lemma_first_verb(text:str) -> str | None:
         return lemmatize(first_verb)
     return None
 
-def lemma_verbs(verbs:list) -> list:
-    for i, verb in enumerate(verbs):
-        verbs[i] = lemmatize(verb)
+def lemma_verbs(text:str) -> list:
+    verbs = exact_verbs(text)
+    verbs = [lemmatize(verb) for verb in verbs]
     return verbs

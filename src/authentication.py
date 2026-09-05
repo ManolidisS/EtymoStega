@@ -4,6 +4,6 @@ import wandb
 
 def signin():
     if HF_TOKEN:
-        huggingface_hub.login(HF_TOKEN)
+        huggingface_hub.login()
     if WANDB_API_KEY:
-        wandb.login(WANDB_API_KEY)
+        wandb.login()

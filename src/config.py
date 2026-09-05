@@ -1,14 +1,18 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 import yaml
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DOTENV_PATH = PROJECT_ROOT / ".env"
+if DOTENV_PATH.is_file():
+    load_dotenv(dotenv_path=DOTENV_PATH)
 
 HF_TOKEN = os.environ.get("HF_TOKEN")
 WANDB_API_KEY = os.environ.get("WANDB_API_KEY")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
-CONFIG_PATH = Path(
-    os.environ.get("ETYMOSTEGA_CONFIG", "config.yaml")
-)
+CONFIG_PATH = PROJECT_ROOT / "config.yaml"
 
 with CONFIG_PATH.open() as f:
     _config = yaml.safe_load(f)
@@ -19,7 +23,6 @@ QUESTION_COPIES = _config["question_copies"]
 QUESTION_ITERATIONS = _config["question_iterations"]
 TOP_K_MLM = _config["top_k_mlm"]
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENT_ROOT = Path(_config["paths"]["experiment_root"])
 DB_PATH = EXPERIMENT_ROOT / "etymology" / "english_wiktionary.db"
 UNCOMPRESSED_FILE_PATH = (

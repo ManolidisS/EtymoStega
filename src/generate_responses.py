@@ -23,3 +23,24 @@ def DPO_format(
         "rejected": [{"role": "assistant", "content": rejected}]
     }
     return formatted
+
+def normalize_text(text):
+    return re.sub(r"\s+", " ", text).strip()
+
+def deduplicate_completions(entries):
+    seen = set()
+    deduped = []
+
+    for entry in entries:
+        key = (
+            normalize_text(entry["question"]),
+            normalize_text(entry["output"]),
+        )
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+        deduped.append(entry)
+
+    return deduped

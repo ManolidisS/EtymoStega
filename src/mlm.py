@@ -2,7 +2,7 @@ from src.config import MLM_NAME, MLM_DOWNLOAD_PATH, TOP_K_MLM
 import torch
 from transformers import AutoTokenizer, AutoModelForMaskedLM
 from src.spacy_code import exact_first_verb
-from src.credentials import signin
+from src.authentication import signin
 
 signin()
 
@@ -18,7 +18,7 @@ model.eval()
 
 mask = tokenizer.mask_token
 
-def fill_mask(text:str, top_k:int=TOP_K_MLM) -> list[tuple[str,float]]:
+def fill_mask(text:str, top_k:int=TOP_K_MLM) -> list[dict]:
     inputs = tokenizer(text, return_tensors="pt").to(device)
     with torch.no_grad():
         logits = model(**inputs).logits
@@ -39,9 +39,13 @@ def fill_mask(text:str, top_k:int=TOP_K_MLM) -> list[tuple[str,float]]:
         token = tokenizer.decode(
             [token_id.item()],
             clean_up_tokenization_spaces=False
-        )
+        ).strip()
         filled_text = text.replace(tokenizer.mask_token, token, 1)
-        results.append((filled_text, log_prob.item()))
+        results.append({
+            "generation": filled_text,
+            "generated_token": token,
+            "score": log_prob.item()
+        })
 
     return results
 
