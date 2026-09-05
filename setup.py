@@ -95,4 +95,4 @@ def setup():
     print("\nSetup complete.")
 
 if __name__ == "__main__":
-    create_directories()
+    setup()
