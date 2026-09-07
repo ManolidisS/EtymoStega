@@ -1,7 +1,7 @@
 seed: 1051918498
 question_copies: 6
 question_iterations: 1
-top_k_mlm: 20
+top_k_mlm: 10
 
 paths:
   experiment_root: "/etymostega"

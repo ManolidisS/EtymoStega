@@ -27,3 +27,10 @@ def lemma_verbs(text:str) -> list:
     verbs = exact_verbs(text)
     verbs = [lemmatize(verb) for verb in verbs]
     return verbs
+
+def first_word(text: str) -> str:
+    doc = nlp(text)
+    for token in doc:
+        if token.is_alpha:
+            return token.text
+    return ""

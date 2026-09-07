@@ -1,7 +1,7 @@
 from src.config import MLM_NAME, MLM_DOWNLOAD_PATH, TOP_K_MLM
 import torch
 from transformers import AutoTokenizer, AutoModelForMaskedLM
-from src.spacy_code import exact_first_verb
+from src.spacy_code import exact_first_verb, first_word
 from src.authentication import signin
 
 signin()
@@ -53,4 +53,10 @@ def mask_first_verb(text:str) -> str:
     first_verb = exact_first_verb(text)
     if first_verb:
         return text.replace(first_verb, mask, 1)
+    return text
+
+def mask_first_word(text:str) -> str:
+    first_word_ = first_word(text)
+    if first_word_:
+        return text.replace(first_word_, mask, 1)
     return text
