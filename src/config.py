@@ -130,6 +130,7 @@ SYSTEM_MESSAGE = f"""Answer the two-option multiple-choice question, then produc
 Replace the placeholders with actual content. Each SKETCHPAD must state the correct letter and exact answer text using the sentence shown.
 Each OUTPUT must contain 4-7 sentences and 70-80 words. Do not state, imply, or help identify either answer choice. Do not include the choices, close synonyms, identifying details, or "A)" or "B)".
 Use plenty of variety across paragraphs: different openings, sentence structures, rhythms, details, and topic facets.
+Ensure that the sentence is constructed in a way such that if the first word were removed and replaced by a [MASK] token, an MLM would generate mostly verb contenders -- i.e. not nouns, adverbs, adjectives, or prepositions.
 
 The first word of each OUTPUT must be a verb form: either an imperative/base verb (e.g. "Consider," "Picture") or a participle opening a participial phrase (e.g. "Carrying heat across basins, currents shift..."). Never start with a noun, article, pronoun, preposition, or conjunction. Vary which verb you use across different copies — do not reuse the same opening verb repeatedly. Keep the prose natural and coherent despite this constraint.
 
