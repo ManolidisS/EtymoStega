@@ -1,6 +1,10 @@
 from src.generate_responses import format_question, contains_answer
+from src.config import EVALUATION_TEMPERATURE, EVALUATION_TOP_P
 
-def chat(model, tokenizer, user_query, system_message="", t=0.7) -> str:
+def chat(model, tokenizer, user_query, system_message:str="", t:float=EVALUATION_TEMPERATURE, tp:float=EVALUATION_TOP_P) -> str:
+    """
+    Interface for LLM chat. Returns the LLM's response as a string.
+    """
     messages = [
         {"role": "system", "content": system_message},
         {"role": "user", "content": user_query}
@@ -19,7 +23,7 @@ def chat(model, tokenizer, user_query, system_message="", t=0.7) -> str:
         max_new_tokens=1024,
         do_sample=True,
         temperature=t,
-        top_p=0.9
+        top_p=tp
     )
     
     generated_ids = [
@@ -29,5 +33,8 @@ def chat(model, tokenizer, user_query, system_message="", t=0.7) -> str:
     response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
     return response
 
-def generate_user_message(list1, list2) -> str:
+def generate_user_message(list1:list, list2:list) -> str:
+    """
+    Given two lists, returns a formatted user message for the steganalyst.
+    """
     return f"First set of responses:\n```\n{list1}\n```\n\nSecond set of responses:\n```\n{list2}\n```"

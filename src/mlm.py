@@ -15,11 +15,16 @@ model.save_pretrained(MLM_DOWNLOAD_PATH)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)
 model.eval()
-# model = torch.compile(model) # Omitted because we don't have a C compiler. Uncomment if you do.
+# Omitted because we don't use a C compiler. Uncomment if you do.
+# model = torch.compile(model)
 
 mask = tokenizer.mask_token
 
 def fill_mask(text:str, top_k:int=TOP_K_MLM) -> list[dict]:
+    """
+    Uses the configurated MLM to generate the top_k candidates for masked text.
+    Only one mask allowed in the text.
+    """
     inputs = tokenizer(text, return_tensors="pt").to(device)
     with torch.no_grad():
         logits = model(**inputs).logits
@@ -56,18 +61,17 @@ def fill_mask_batches(
     top_k: int = TOP_K_MLM
 ) -> list[list[dict]]:
     """
-    Processes a list of texts in batches.
+    Uses the configured MLM to processes a list of texts in batches, returning the top_k candidates.
     Each text must contain exactly one mask token.
     """
     mask_token_id = tokenizer.mask_token_id
     mask_token_str = tokenizer.mask_token
     all_results = []
 
-    with torch.inference_mode():  # Faster than torch.no_grad()
+    with torch.inference_mode():
         for i in range(0, len(texts), batch_size):
             batch_texts = texts[i : i + batch_size]
 
-            # Dynamic padding to the longest sequence in this batch
             inputs = tokenizer(
                 batch_texts,
                 padding=True,
@@ -78,29 +82,23 @@ def fill_mask_batches(
             input_ids = inputs["input_ids"]
             logits = model(**inputs).logits
 
-            # Vectorized search for the mask token index in each row
             mask_indices = (input_ids == mask_token_id).nonzero(as_tuple=True)
             batch_row_indices = mask_indices[0]
             mask_pos_indices = mask_indices[1]
 
-            # Verify each row has exactly one mask
             if len(batch_row_indices) != len(batch_texts):
                 raise ValueError(
                     f"Each text must contain exactly one '{mask_token_str}'."
                 )
 
-            # Gather logits at the mask positions: shape (batch_size, vocab_size)
             mask_logits = logits[batch_row_indices, mask_pos_indices]
 
-            # Compute log probabilities and top_k
             log_probs = torch.log_softmax(mask_logits, dim=-1)
             topk_values, topk_indices = torch.topk(log_probs, top_k, dim=-1)
 
-            # Move results to CPU at once
             topk_values = topk_values.cpu().tolist()
             topk_indices = topk_indices.cpu().tolist()
 
-            # Decode results
             for row_idx, text in enumerate(batch_texts):
                 row_results = []
                 for score, token_id in zip(topk_values[row_idx], topk_indices[row_idx]):
@@ -118,12 +116,18 @@ def fill_mask_batches(
     return all_results
 
 def mask_first_verb(text:str) -> str:
+    """
+    Masks the first verb of the text.
+    """
     first_verb = exact_first_verb(text)
     if first_verb:
         return text.replace(first_verb, mask, 1)
     return text
 
 def mask_first_word(text:str) -> str:
+    """
+    Masks the first word of the text.
+    """
     first_word_ = first_word(text)
     if first_word_:
         return text.replace(first_word_, mask, 1)

@@ -20,8 +20,10 @@ with CONFIG_PATH.open() as f:
 
 SEED = _config["seed"]
 QUESTION_COPIES = _config["question_copies"]
-QUESTION_ITERATIONS = _config["question_iterations"]
+EVALUATION_TEMPERATURE = _config["evaluation_temperature"]
+EVALUATION_TOP_P = _config["evaluation_top_p"]
 TOP_K_MLM = _config["top_k_mlm"]
+STEGANALYST_MODEL = _config["steganalyst_model"]
 
 EXPERIMENT_ROOT = Path(_config["paths"]["experiment_root"])
 DB_PATH = EXPERIMENT_ROOT / "etymology" / "english_wiktionary.db"
