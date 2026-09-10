@@ -1,22 +1,26 @@
 from src.config import (
+    SEED,
     PROJECT_ROOT,
     ETYMOLOGY_DIR,
     DATABASE_DIR,
     create_directories,
     WIKTEXTRACT_URL,
-    QUESTIONS_TRAINING_URL,
-    QUESTIONS_VALIDATION_URL,
     WIKTEXTRACT_GZ,
     WIKTEXTRACT_JSONL,
     QUESTIONS_TRAINING,
-    QUESTIONS_VALIDATION
+    QUESTIONS_EVALUATION,
+    RAW_QUESTIONS
 )
 import gzip
 import shutil
 import subprocess
 import sys
+import random
+import json
 from pathlib import Path
 from urllib.request import urlretrieve
+
+random.seed(SEED)
 
 def download(url: str, destination: Path):
     """Download a file if it does not already exist."""
@@ -59,25 +63,38 @@ def run_module(module: str, *args: str):
         check=True,
     )
 
+def setup_questions(path_to_questions, path_to_train, path_to_eval):
+    with open(path_to_questions, "r", encoding="utf-8") as f:
+        data = [json.loads(line) for line in f if line.strip()]
+
+    random.shuffle(data)
+    
+    train = data[:1125]
+    evalu = data[1125:]
+
+    with open(path_to_train, "w", encoding="utf-8") as f:
+        for item in train:
+            f.write(json.dumps(item, ensure_ascii=False) + "\n")
+
+    with open(path_to_eval, "w", encoding="utf-8") as f:
+        for item in evalu:
+            f.write(json.dumps(item, ensure_ascii=False) + "\n")
+
 def setup():
     print("Creating experiment directories...")
     create_directories()
+
+    setup_questions(
+        RAW_QUESTIONS,
+        QUESTIONS_TRAINING,
+        QUESTIONS_EVALUATION
+    )
 
     print("\nDownloading required files...")
 
     download(
         WIKTEXTRACT_URL,
         WIKTEXTRACT_GZ,
-    )
-
-    download(
-        QUESTIONS_TRAINING_URL,
-        QUESTIONS_TRAINING,
-    )
-
-    download(
-        QUESTIONS_VALIDATION_URL,
-        QUESTIONS_VALIDATION,
     )
 
     print("\nExtracting Wiktextract data...")

@@ -41,6 +41,8 @@ MODELS = _config["generation"]["models"]
 GRANITE_MODEL_ID = "ibm-granite/granite-4.1-8b"
 QWEN_MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
 
+RAW_QUESTIONS = PROJECT_ROOT / "files" / "questions.jsonl"
+
 ETYMOLOGY_DIR = EXPERIMENT_ROOT / "etymology"
 DATABASE_DIR = EXPERIMENT_ROOT / "databases"
 MODELS_DIR = EXPERIMENT_ROOT / "models"
@@ -88,18 +90,6 @@ WIKTEXTRACT_URL = (
     "https://kaikki.org/dictionary/raw-wiktextract-data.jsonl.gz"
 )
 
-QUESTIONS_TRAINING_URL = (
-    "https://raw.githubusercontent.com/"
-    "ManolidisS/NT2026-files/refs/heads/main/"
-    "questions-training.jsonl"
-)
-
-QUESTIONS_VALIDATION_URL = (
-    "https://raw.githubusercontent.com/"
-    "ManolidisS/NT2026-files/refs/heads/main/"
-    "questions-validation.jsonl"
-)
-
 WIKTEXTRACT_GZ = (
     ETYMOLOGY_DIR / "raw-wiktextract-data.jsonl.gz"
 )
@@ -112,8 +102,8 @@ QUESTIONS_TRAINING = (
     DATABASE_DIR / "questions-training.jsonl"
 )
 
-QUESTIONS_VALIDATION = (
-    DATABASE_DIR / "questions-validation.jsonl"
+QUESTIONS_EVALUATION = (
+    DATABASE_DIR / "questions-evaluation.jsonl"
 )
 
 SYSTEM_MESSAGE = f"""Answer the two-option multiple-choice question, then produce exactly {QUESTION_COPIES} blocks in this format:
