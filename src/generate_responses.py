@@ -14,24 +14,6 @@ def contains_answer(text:str, answer:str) -> bool:
     pattern = rf"(?<!\w){re.escape(str(answer).strip())}(?!\w)"
     return re.search(pattern, text, re.IGNORECASE) is not None
 
-def DPO_format(
-    prompt:str,
-    chosen:str,
-    rejected:str,
-    system:str=DATABASE_SYSTEM_MESSAGE
-) -> dict:
-    """
-    Given a system (optional) & user prompt, and a chosen & rejected response, returns a DPO-format dictionary.
-    """
-    formatted = {
-        "prompt": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": prompt}
-        ],
-        "chosen": [{"role": "assistant", "content": chosen}],
-        "rejected": [{"role": "assistant", "content": rejected}]
-    }
-    return formatted
 
 def normalize_text(text:str) -> str:
     """

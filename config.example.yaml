@@ -4,6 +4,7 @@ top_k_mlm: 10
 evaluation_temperature: 0.7
 evaluation_top_p: 0.9
 steganalyst_model: "openai/gpt-5.6-sol"
+steganalyst_iterations: 3
 
 paths:
   experiment_root: "/etymostega"
